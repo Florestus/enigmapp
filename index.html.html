@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Escape Game - Suivi</title>
+</head>
+<body>
+  <h1>Suivi GPS</h1>
+  <p id="status">Chargement...</p>
+  <p>Latitude : <span id="lat"></span></p>
+  <p>Longitude : <span id="lon"></span></p>
+
+  <script>
+    const webhookURL = "TON_WEBHOOK_MAKE_À_METTRE_ICI"; // À compléter à l'étape 2
+
+    if ('geolocation' in navigator) {
+      document.getElementById('status').innerText = 'Localisation activée...';
+
+      navigator.geolocation.watchPosition(position => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+
+        document.getElementById('lat').innerText = lat;
+        document.getElementById('lon').innerText = lon;
+
+        fetch(webhookURL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            latitude: lat,
+            longitude: lon,
+            timestamp: new Date().toISOString()
+          })
+        });
+
+      }, error => {
+        document.getElementById('status').innerText = 'Erreur : ' + error.message;
+      }, {
+        enableHighAccuracy: true,
+        maximumAge: 0
+      });
+
+    } else {
+      document.getElementById('status').innerText = "La géolocalisation n'est pas supportée.";
+    }
+  </script>
+</body>
+</html>
